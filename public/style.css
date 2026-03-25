@@ -1377,6 +1377,95 @@ button.sidebar-footer-link:focus-visible {
     background: var(--surface2) !important;
 }
 
+/* My location (geolocation) — stacked under zoom, same bar styling */
+.leaflet-control-locate {
+    margin-top: 8px !important;
+    border: 1px solid var(--border-hi) !important;
+    border-radius: 10px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+}
+
+.leaflet-control-locate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: rgba(10, 11, 18, 0.95);
+    color: var(--muted2);
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+}
+
+.leaflet-control-locate-btn:hover:not(:disabled) {
+    color: var(--text);
+    background: var(--surface2);
+}
+
+.leaflet-control-locate-btn:disabled {
+    cursor: wait;
+    opacity: 0.75;
+}
+
+.leaflet-control-locate-btn.is-loading svg {
+    animation: locate-spin 0.8s linear infinite;
+}
+
+@keyframes locate-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+[data-theme="light"] .leaflet-control-locate {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18) !important;
+}
+
+[data-theme="light"] .leaflet-control-locate-btn {
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--muted2);
+}
+
+[data-theme="light"] .leaflet-control-locate-btn:hover:not(:disabled) {
+    color: var(--text);
+    background: var(--surface2);
+}
+
+/* Geolocation error / status toast */
+.map-geo-toast {
+    position: fixed;
+    z-index: 950;
+    right: 14px;
+    bottom: 100px;
+    max-width: min(320px, calc(100vw - 28px));
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text);
+    background: rgba(12, 13, 20, 0.95);
+    border: 1px solid var(--border-hi);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.map-geo-toast--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+[data-theme="light"] .map-geo-toast {
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+}
+
 /* ── PILL CLUSTER ICONS (brand .ico + count, cylindrical pill) ── */
 .cluster-pill-wrap {
     border: none !important;

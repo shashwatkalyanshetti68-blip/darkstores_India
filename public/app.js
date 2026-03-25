@@ -53,6 +53,88 @@
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
+    /* My location: one-shot zoom to browser geolocation (permission prompt on first use) */
+    let userLocationMarker = null;
+    const LOCATE_ZOOM = 15;
+    const LOCATE_GEO_OPTS = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+
+    function geoErrorMessage(err) {
+        if (!err || err.code == null) return 'Could not get your location.';
+        if (err.code === 1) return 'Location access was denied. Allow location in the browser to use this.';
+        if (err.code === 2) return 'Your position could not be determined.';
+        if (err.code === 3) return 'Location request timed out. Try again.';
+        return 'Could not get your location.';
+    }
+
+    function showGeoToast(message) {
+        let el = document.getElementById('geoToast');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'geoToast';
+            el.className = 'map-geo-toast';
+            el.setAttribute('role', 'status');
+            document.getElementById('app').appendChild(el);
+        }
+        el.textContent = message;
+        el.classList.add('map-geo-toast--visible');
+        clearTimeout(showGeoToast._t);
+        showGeoToast._t = setTimeout(() => el.classList.remove('map-geo-toast--visible'), 4500);
+    }
+
+    const LocateControl = L.Control.extend({
+        onAdd() {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-locate');
+            const btn = L.DomUtil.create('button', 'leaflet-control-locate-btn', container);
+            btn.type = 'button';
+            btn.setAttribute('aria-label', 'Zoom to my location');
+            btn.title = 'Zoom to my location';
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>';
+
+            L.DomEvent.disableClickPropagation(container);
+            L.DomEvent.on(btn, 'click', L.DomEvent.stopPropagation);
+
+            L.DomEvent.on(btn, 'click', () => {
+                if (!navigator.geolocation) {
+                    showGeoToast('Geolocation is not supported in this browser.');
+                    return;
+                }
+                btn.disabled = true;
+                btn.classList.add('is-loading');
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        btn.disabled = false;
+                        btn.classList.remove('is-loading');
+                        const lat = pos.coords.latitude;
+                        const lng = pos.coords.longitude;
+                        const ll = L.latLng(lat, lng);
+                        if (userLocationMarker) {
+                            map.removeLayer(userLocationMarker);
+                            userLocationMarker = null;
+                        }
+                        userLocationMarker = L.circleMarker(ll, {
+                            radius: 9,
+                            color: '#3b82f6',
+                            weight: 3,
+                            fillColor: '#60a5fa',
+                            fillOpacity: 0.35,
+                            interactive: false,
+                        }).addTo(map);
+                        map.setView(ll, LOCATE_ZOOM, { animate: true });
+                    },
+                    (err) => {
+                        btn.disabled = false;
+                        btn.classList.remove('is-loading');
+                        showGeoToast(geoErrorMessage(err));
+                    },
+                    LOCATE_GEO_OPTS
+                );
+            });
+
+            return container;
+        },
+    });
+    new LocateControl({ position: 'bottomright' }).addTo(map);
+
     const TILE_OPTS = { attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 19 };
     const isLight = document.documentElement.dataset.theme === 'light';
     let tileLayer = L.tileLayer(
