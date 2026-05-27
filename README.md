@@ -1,4 +1,4 @@
-# Store Grid — Quick Commerce Intelligence
+# darkstores.intel — Quick Commerce Intelligence
 
 An interactive map of dark store locations across India for Zepto, Blinkit, and Swiggy (Instamart).
 
@@ -24,7 +24,7 @@ An interactive map of dark store locations across India for Zepto, Blinkit, and 
 
 Locations sourced from public-facing APIs. Blinkit coordinates are trilaterated (0–50m accuracy for most stores). All figures are a lower bound.
 
-Read the [technical write-up on ](https://jatin-dot-py..com/how-i-scraped-most-dark-stores-in-india-blinkit-zepto-swiggy-instamart-ad939ff17af9).
+Read the [technical write-up on Medium](https://jatin-dot-py.medium.com/how-i-scraped-most-dark-stores-in-india-blinkit-zepto-swiggy-instamart-ad939ff17af9).
 
 ## Stack
 
