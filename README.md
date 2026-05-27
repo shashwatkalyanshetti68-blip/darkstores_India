@@ -1,4 +1,4 @@
-# darkstores.intel — Quick Commerce Intelligence
+# store grid — Quick Commerce Intelligence
 
 An interactive map of dark store locations across India for Zepto, Blinkit, and Swiggy (Instamart).
 
